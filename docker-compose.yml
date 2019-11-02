@@ -1,0 +1,20 @@
+version: '2'
+services:
+  mysql:
+    container_name: takeaway_mysql
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: takeaway
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3300:3306"
+  php:
+    container_name: takeaway_php
+    build: ./docker/php
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/www

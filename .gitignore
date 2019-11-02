@@ -6,4 +6,9 @@
 /public/bundles/
 /var/
 /vendor/
+/.idea
 ###< symfony/framework-bundle ###
+
+###> symfony/web-server-bundle ###
+/.web-server-pid
+###< symfony/web-server-bundle ###
