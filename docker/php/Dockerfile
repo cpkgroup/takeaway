@@ -1,6 +1,6 @@
 FROM php:7.3-cli
 
-RUN apt-get update && apt-get install -y git unzip curl
+RUN apt-get update && apt-get install -y git unzip curl librabbitmq-dev
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -8,6 +8,9 @@ RUN composer --version
 
 # Install pdo
 RUN docker-php-ext-install pdo pdo_mysql
+
+# Install amqp
+RUN pecl install amqp && docker-php-ext-enable amqp
 
 # Set timezone
 RUN rm /etc/localtime
