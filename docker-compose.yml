@@ -29,3 +29,11 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
+
+  vuejs:
+    container_name: takeaway_vuejs
+    build: ./vuejs
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./vuejs:/www
