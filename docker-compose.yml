@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   mysql:
     container_name: takeaway_mysql
@@ -10,12 +10,10 @@ services:
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
     ports:
-      - "3300:3306"
+      - "3306:3306"
   php:
     container_name: takeaway_php
     build: ./docker/php
-    ports:
-      - "8000:80"
     volumes:
       - .:/www
 
@@ -33,7 +31,16 @@ services:
   vuejs:
     container_name: takeaway_vuejs
     build: ./vuejs
-    ports:
-      - "8080:8080"
     volumes:
       - ./vuejs:/www
+
+  nginx:
+    container_name: takeaway_nginx
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - vuejs
