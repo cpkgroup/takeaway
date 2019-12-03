@@ -36,6 +36,9 @@
     "behat/transliterator": {
         "version": "v1.2.0"
     },
+    "behatch/contexts": {
+        "version": "3.2.0"
+    },
     "composer/semver": {
         "version": "1.5.0"
     },
@@ -151,11 +154,17 @@
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
+    "justinrainbow/json-schema": {
+        "version": "5.2.9"
+    },
     "ocramius/package-versions": {
         "version": "1.5.1"
     },
     "ocramius/proxy-manager": {
         "version": "2.2.3"
+    },
+    "php": {
+        "version": "7.3"
     },
     "php-cs-fixer/diff": {
         "version": "v1.3.0"
