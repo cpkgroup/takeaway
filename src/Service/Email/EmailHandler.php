@@ -5,6 +5,7 @@ namespace App\Service\Email;
 use App\Entity\Email;
 use App\Service\Job\SendEmailJob;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -12,6 +13,7 @@ class EmailHandler implements MessageHandlerInterface
 {
     protected $bus;
     protected $entityManager;
+    protected $logger;
     protected $maxTriesCount;
     protected $defaultFromName;
     protected $defaultFromEmail;
@@ -23,6 +25,7 @@ class EmailHandler implements MessageHandlerInterface
     public function __construct(
         MessageBusInterface $bus,
         EntityManagerInterface $entityManager,
+        LoggerInterface $logger,
         $maxTriesCount,
         $defaultFromName,
         $defaultFromEmail,
@@ -30,6 +33,7 @@ class EmailHandler implements MessageHandlerInterface
     ) {
         $this->bus = $bus;
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
         $this->maxTriesCount = $maxTriesCount;
         $this->defaultFromName = $defaultFromName;
         $this->defaultFromEmail = $defaultFromEmail;
@@ -40,8 +44,7 @@ class EmailHandler implements MessageHandlerInterface
 
     public function run(SendEmailJob $job)
     {
-        echo 'email job fired#'.$job->getId()."\n";
-
+        $this->logger->info('Email job fired', [$job->getId()]);
         try {
             if (empty($this->providers)) {
                 throw new \Exception('Email providers are empty!');
@@ -58,22 +61,22 @@ class EmailHandler implements MessageHandlerInterface
             }
             foreach ($this->providers as $provider) {
                 // if provider could sending email break the loop, else try next provider
-                if ($succeed = $this->batchSendViaProvider($provider, $email)) {
+                if ($isFinished = $this->batchSendViaProvider($provider, $email)) {
                     break;
                 }
             }
             $emailRepository->markAsSent($email);
         } catch (\Exception $exception) {
-            // log error here
+            $this->logger->error('Queue failed: '.$exception->getMessage());
 
             return;
         }
 
-        if (!$succeed) {
-            echo 'put job again in queue#'.$job->getId()."\n";
+        if (!$isFinished) {
+            $this->logger->info('Put job again in queue', [$job->getId()]);
             $this->bus->dispatch($job);
         }
-        echo "queue finished \n\n\n";
+        $this->logger->info('Queue finished');
     }
 
     /**
@@ -83,11 +86,10 @@ class EmailHandler implements MessageHandlerInterface
      */
     protected function batchSendViaProvider(ProviderInterface $provider, Email $email)
     {
-        $succeedAll = true;
+        $isFinished = true;
         foreach ($email->getRecipients() as $recipient) {
             if (!$recipient->isSent() && $recipient->getTryCount() < $this->maxTriesCount) {
                 $recipient->increaseTriesCount();
-                echo 'sending email to: '.$recipient->getEmail().'#'.$provider->getProviderName().'#'.$recipient->getTryCount().'#';
                 $succeed = $provider->send(
                     $email->getFromName(),
                     $email->getFromEmail(),
@@ -97,16 +99,24 @@ class EmailHandler implements MessageHandlerInterface
                     $email->getBody(),
                     $email->getBodyTextPart()
                 );
+                $this->logger->info('Sending email via provider', [
+                    'to' => $recipient->getEmail(),
+                    'tries' => $recipient->getTryCount(),
+                    'provider' => $provider->getProviderName(),
+                    'succeed' => $succeed,
+                ]);
                 $recipient->setIsSent($succeed);
                 $recipient->setProvider($provider->getProviderName());
                 $recipient->setSentAt(new \DateTime());
-                $succeedAll = $succeedAll && $succeed;
-                echo $succeed ? 'success' : 'failed';
-                echo "\n";
+                $isFinished = $isFinished && $succeed;
+            }
+            if ($recipient->getTryCount() == $this->maxTriesCount) {
+                // if the maximum try count exceeded then we shouldn't try to send email again
+                $isFinished = true;
             }
         }
 
-        return $succeedAll;
+        return $isFinished;
     }
 
     public function __invoke(SendEmailJob $job)
