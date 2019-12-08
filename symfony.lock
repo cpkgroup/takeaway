@@ -160,6 +160,9 @@
     "justinrainbow/json-schema": {
         "version": "5.2.9"
     },
+    "monolog/monolog": {
+        "version": "1.25.2"
+    },
     "ocramius/package-versions": {
         "version": "1.5.1"
     },
@@ -311,6 +314,23 @@
     },
     "symfony/mime": {
         "version": "v4.3.6"
+    },
+    "symfony/monolog-bridge": {
+        "version": "v4.3.9"
+    },
+    "symfony/monolog-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "6240c6d43e8237a32452f057f81816820fd56ab6"
+        },
+        "files": [
+            "config/packages/dev/monolog.yaml",
+            "config/packages/prod/monolog.yaml",
+            "config/packages/test/monolog.yaml"
+        ]
     },
     "symfony/options-resolver": {
         "version": "v4.3.8"
