@@ -7,14 +7,18 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Message.
+ * Email Entity Class.
  *
- * @ORM\Table(name="message")
+ * @ORM\Table(name="email")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  */
-class Message
+class Email
 {
+    const EMAIL_TYPE_TEXT = 0;
+    const EMAIL_TYPE_HTML = 1;
+    const EMAIL_TYPE_MARKDOWN = 2;
+
     /**
      * @var int
      *
@@ -25,7 +29,7 @@ class Message
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="Recipient", mappedBy="message", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="EmailRecipient", mappedBy="emailMessage", cascade={"persist"})
      */
     private $recipients;
 
@@ -58,11 +62,11 @@ class Message
     private $body;
 
     /**
-     * @var int
+     * @var string|null
      *
-     * @ORM\Column(name="message_type", type="integer", nullable=false)
+     * @ORM\Column(name="body_text_part", type="text", length=65535, nullable=true)
      */
-    private $messageType = 0;
+    private $bodyTextPart;
 
     /**
      * @var DateTime
@@ -94,23 +98,19 @@ class Message
         return $this->id;
     }
 
-    public function setId(int $id): Message
+    public function setId(int $id)
     {
         $this->id = $id;
-
-        return $this;
     }
 
-    public function getRecipients(): ArrayCollection
+    public function getRecipients()
     {
         return $this->recipients;
     }
 
-    public function setRecipients(ArrayCollection $recipients): Message
+    public function setRecipients(ArrayCollection $recipients)
     {
         $this->recipients = $recipients;
-
-        return $this;
     }
 
     public function getFromEmail(): ?string
@@ -118,11 +118,9 @@ class Message
         return $this->fromEmail;
     }
 
-    public function setFromEmail(?string $fromEmail): Message
+    public function setFromEmail(?string $fromEmail)
     {
         $this->fromEmail = $fromEmail;
-
-        return $this;
     }
 
     public function getFromName(): ?string
@@ -130,11 +128,9 @@ class Message
         return $this->fromName;
     }
 
-    public function setFromName(?string $fromName): Message
+    public function setFromName(?string $fromName)
     {
         $this->fromName = $fromName;
-
-        return $this;
     }
 
     public function getSubject(): string
@@ -142,11 +138,9 @@ class Message
         return $this->subject;
     }
 
-    public function setSubject(string $subject): Message
+    public function setSubject(string $subject)
     {
         $this->subject = $subject;
-
-        return $this;
     }
 
     public function getBody(): string
@@ -154,23 +148,25 @@ class Message
         return $this->body;
     }
 
-    public function setBody(string $body): Message
+    public function setBody(string $body)
     {
         $this->body = $body;
-
-        return $this;
     }
 
-    public function getMessageType(): int
+    /**
+     * @return string|null
+     */
+    public function getBodyTextPart(): ?string
     {
-        return $this->messageType;
+        return $this->bodyTextPart;
     }
 
-    public function setMessageType(int $messageType): Message
+    /**
+     * @param string|null $bodyTextPart
+     */
+    public function setBodyTextPart(?string $bodyTextPart): void
     {
-        $this->messageType = $messageType;
-
-        return $this;
+        $this->bodyTextPart = $bodyTextPart;
     }
 
     public function getCreatedAt(): DateTime
@@ -178,21 +174,17 @@ class Message
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTime $createdAt): Message
+    public function setCreatedAt(DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     /**
-     * @return Message
+     * @return Email
      */
-    public function addRecipient(Recipient $recipient)
+    public function addRecipient(EmailRecipient $recipient)
     {
-        $recipient->setMessage($this);
+        $recipient->setEmailMessage($this);
         $this->recipients[] = $recipient;
-
-        return $this;
     }
 }
