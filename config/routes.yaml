@@ -1,3 +1,14 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+# API routes
+compose_email:
+  path: /api/email/compose
+  controller: App\Controller\EmailController::composeAction
+  methods: [POST]
+
+list_emails:
+  path: /api/email
+  controller: App\Controller\EmailController::listAction
+  methods: [GET]
