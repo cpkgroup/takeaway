@@ -44,5 +44,17 @@ class EmailController extends AbstractController
 
     public function listAction(Request $request)
     {
+        $limit = $this->getParameter('reportLimit');
+        $page = (int) $request->get('page', 1);
+        $offset = ($page - 1) * $limit;
+        $emailRepository = $this->getDoctrine()->getRepository(Email::class);
+        $emails = $emailRepository->findAllEmail($limit, $offset);
+
+        $countAll = $emailRepository->countAllEmail();
+
+        return new JsonResponse([
+            'items' => $emails,
+            'numberOfPages' => ceil($countAll / $limit),
+        ]);
     }
 }

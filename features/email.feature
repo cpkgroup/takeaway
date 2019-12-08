@@ -38,3 +38,12 @@ Feature: Email
     And the response should be in JSON
     And the header "Content-Type" should be equal to "application/json"
     And the JSON node "status" should be equal to the string "succeed"
+
+  Scenario: See email logs
+    And I send a "GET" request to "/api/email"
+    Then the response status code should be 200
+    And the response should be in JSON
+    And the header "Content-Type" should be equal to "application/json"
+    And the JSON node "root.items[0].subject" should be equal to the string "Hello"
+    And the JSON node "root.items[0].body" should be equal to the string "Hello world"
+    And the JSON node "root.items[0].recipients[0].email" should be equal to the string "habibi.mh@gmail.com"

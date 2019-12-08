@@ -13,6 +13,16 @@ class EmailRepository extends EntityRepository
         return $this->find($id);
     }
 
+    public function findAllEmail(int $limit, int $offset)
+    {
+        return $this->findBy([], ['id' => 'DESC'], $limit, $offset);
+    }
+
+    public function countAllEmail()
+    {
+        return $this->count([]);
+    }
+
     /**
      * @return Email
      *

@@ -5,6 +5,7 @@ namespace App\Entity;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 /**
  * Email Entity Class.
@@ -14,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\HasLifecycleCallbacks
  * @ORM\Entity(repositoryClass="App\Repository\EmailRepository")
  */
-class Email
+class Email implements JsonSerializable
 {
     const EMAIL_TYPE_TEXT = 0;
     const EMAIL_TYPE_HTML = 1;
@@ -187,5 +188,31 @@ class Email
     {
         $recipient->setEmailMessage($this);
         $this->recipients[] = $recipient;
+    }
+
+    public function jsonSerialize()
+    {
+        $recipients = [];
+        foreach ($this->getRecipients() as $recipient) {
+            $recipients[] = [
+                'name' => $recipient->getName(),
+                'email' => $recipient->getEmail(),
+                'isSent' => $recipient->isSent(),
+                'isPending' => $recipient->isPending(),
+                'sentAt' => $recipient->getSentAt() ? $recipient->getSentAt()->format('Y-m-d H:i:s') : null,
+                'provider' => $recipient->getProvider(),
+            ];
+        }
+
+        return [
+            'id' => $this->getId(),
+            'subject' => $this->getSubject(),
+            'body' => $this->getBody(),
+            'from' => [
+                'name' => $this->getFromName(),
+                'email' => $this->getFromEmail(),
+            ],
+            'recipients' => $recipients,
+        ];
     }
 }
