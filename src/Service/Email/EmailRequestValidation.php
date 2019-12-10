@@ -16,7 +16,7 @@ class EmailRequestValidation
         $this->validator = Validation::createValidator();
     }
 
-    public function getConstraints()
+    private function getConstraints()
     {
         return new Assert\Collection([
             'fromEmail' => new Assert\Optional([
