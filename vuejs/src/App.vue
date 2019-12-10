@@ -1,56 +1,62 @@
 <template>
-  <v-app>
-    <v-app-bar app color="primary" dark>
-      <div class="d-flex align-center">
-        <v-img
-                alt="Vuetify Logo"
-                class="shrink mr-2"
-                contain
-                src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-                transition="scale-transition"
-                width="40"
-        />
+    <v-app>
+        <v-navigation-drawer app>
+            <v-navigation-drawer
+                    absolute
+                    permanent
+                    left
+            >
+                <template v-slot:prepend>
+                    <v-list-item two-line>
 
-        <v-img
-                alt="Vuetify Name"
-                class="shrink mt-1 hidden-sm-and-down"
-                contain
-                min-width="100"
-                src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-                width="100"
-        />
-      </div>
+                        <v-list-item-content>
+                            <v-list-item-title><b>Takeaway Challenge</b></v-list-item-title>
+                            <v-list-item-subtitle>By Mohamad Habibi</v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+                </template>
 
-      <v-spacer></v-spacer>
+                <v-divider></v-divider>
 
-      <v-btn
-              href="https://github.com/vuetifyjs/vuetify/releases/latest"
-              target="_blank"
-              text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
+                <v-list dense>
+                    <v-list-item
+                            v-for="item in items"
+                            :key="item.title"
+                            @click=""
+                            :to="item.to"
+                    >
+                        <v-list-item-icon>
+                            <v-icon>{{ item.icon }}</v-icon>
+                        </v-list-item-icon>
 
-    <v-content>
-      <HelloWorld />
-    </v-content>
-  </v-app>
+                        <v-list-item-content>
+                            <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+            </v-navigation-drawer>
+        </v-navigation-drawer>
+
+        <v-container>
+            <router-view></router-view>
+        </v-container>
+
+    </v-app>
 </template>
 
 <script>
-  import HelloWorld from "./components/HelloWorld";
 
-  export default {
-    name: "App",
+    export default {
+        name: "App",
 
-    components: {
-      HelloWorld
-    },
-
-    data: () => ({
-      //
-    })
-  };
+        data() {
+            return {
+                items: [
+                    {title: 'Email Logs', icon: 'mdi-email', to: '/'},
+                    {title: 'New Email', icon: 'mdi-send', to: 'compose'},
+                    {title: 'About Me', icon: 'mdi-account', to: 'about'},
+                ],
+            }
+        }
+    };
 </script>
