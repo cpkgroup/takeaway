@@ -60,14 +60,21 @@ class EmailHandler implements MessageHandlerInterface
         }
         $emailRepository = $this->entityManager->getRepository(Email::class);
 
-        /** @var Email $email */
-        $email = $emailRepository->findEmail($job->getId());
-        if (!$email->getFromName()) {
-            $email->setFromName($this->defaultFromName);
+        try {
+            /* @var Email $email */
+            $email = $emailRepository->findEmail($job->getId());
+            if (!$email->getFromName()) {
+                $email->setFromName($this->defaultFromName);
+            }
+            if (!$email->getFromEmail()) {
+                $email->setFromEmail($this->defaultFromEmail);
+            }
+        } catch (\Exception $exception) {
+            $this->logger->error('Can not retrieve email data from database');
+
+            return;
         }
-        if (!$email->getFromEmail()) {
-            $email->setFromEmail($this->defaultFromEmail);
-        }
+        $isFinished = true;
         foreach ($this->providers as $provider) {
             try {
                 // if provider could sending email break the loop, else try next provider
@@ -100,6 +107,7 @@ class EmailHandler implements MessageHandlerInterface
         foreach ($email->getRecipients() as $recipient) {
             if (!$recipient->isSent() && $recipient->getTryCount() < $this->maxTriesCount) {
                 $recipient->increaseTriesCount();
+                $recipient->setIsSent(false);
                 $succeed = $provider->send(
                     $email->getFromName(),
                     $email->getFromEmail(),

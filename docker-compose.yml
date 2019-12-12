@@ -33,6 +33,7 @@ services:
     build: ./vuejs
     volumes:
       - ./vuejs:/www
+      - /www/node_modules
 
   nginx:
     container_name: takeaway_nginx

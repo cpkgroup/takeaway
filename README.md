@@ -4,17 +4,26 @@
 
 To start this application, you need to do following steps:
 
+```
+git clone git@github.com:cpkgroup/takeaway.git
+```
+
 - Run from the project root:
 
 ```
 docker-compose build
-docker-compose up -d
 docker-compose run php composer install
 ```
 
 - Edit .env file and fill `SENDGRID_API_KEY` , `MAILJET_APIKEY_PUBLIC` and `MAILJET_APIKEY_PRIVATE`
 
-- Wait until the docker up after run these commands:
+- Run from the project root:
+
+```
+docker-compose up -d
+```
+
+- Wait until the docker and VueJs up (VueJs takes a few minutes to up, using `docker-compose logs` to show if VueJs compile is finished), after run these commands:
 
 ```
 docker-compose run php bin/console doctrine:schema:update --force  # generate mysql schema
@@ -155,6 +164,11 @@ Status 202
 ```
 GET http://localhost/api/email
 ```
+
+#### Add new email provider
+
+You just need go to config/services.yaml, and inside `App\Service\Email\EmailHandler` service:
+define new provider there and create a class inside: `src/Service/Email/Providers` path which should implement ProviderInterface.
 
 ## Author
 - [Mohamad Habibi](https://www.linkedin.com/in/habibimh) 
