@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="email_recipient", indexes={@ORM\Index(name="status", columns={"status"})})
  * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\EmailRecipientRepository")
  */
 class EmailRecipient
 {
