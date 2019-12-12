@@ -12,6 +12,8 @@ docker-compose up -d
 docker-compose run php composer install
 ```
 
+- Edit .env file and fill `SENDGRID_API_KEY` , `MAILJET_APIKEY_PUBLIC` and `MAILJET_APIKEY_PRIVATE`
+
 - Wait until the docker up after run these commands:
 
 ```
