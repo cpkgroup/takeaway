@@ -8,12 +8,15 @@ use App\Repository\EmailRepository;
 use App\Service\Email\EmailHandler;
 use App\Service\Job\SendEmailJob;
 use App\Tests\Service\Email\DummyEmailProviders\TestFailureProvider;
+use App\Tests\Service\Email\DummyEmailProviders\TestFailureProvider2;
+use App\Tests\Service\Email\DummyEmailProviders\TestFailureProvider3;
 use App\Tests\Service\Email\DummyEmailProviders\TestSuccessProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class EmailHandlerTest extends TestCase
 {
@@ -31,6 +34,11 @@ class EmailHandlerTest extends TestCase
      * @var LoggerInterface
      */
     protected $logger;
+
+    /**
+     * @var HttpClientInterface
+     */
+    protected $httpClient;
 
     protected $defaultFromName = 'Test';
     protected $defaultFromEmail = 'tester@localhost.com';
@@ -78,6 +86,7 @@ class EmailHandlerTest extends TestCase
             ->willReturn($emailRepository);
 
         $this->logger = $this->createMock(LoggerInterface::class);
+        $this->httpClient = $this->createMock(HttpClientInterface::class);
     }
 
     /**
@@ -117,6 +126,7 @@ class EmailHandlerTest extends TestCase
                 $this->bus,
                 $this->entityManager,
                 $this->logger,
+                $this->httpClient,
                 $maxTriesCount,
                 $this->defaultFromName,
                 $this->defaultFromEmail,
@@ -141,8 +151,8 @@ class EmailHandlerTest extends TestCase
         return [
             [
                 [
-                    TestFailureProvider::class,
-                    TestSuccessProvider::class,
+                    TestFailureProvider::class => [],
+                    TestSuccessProvider::class => [],
                 ],
                 2,
                 2,
@@ -151,8 +161,8 @@ class EmailHandlerTest extends TestCase
             ],
             [
                 [
-                    TestFailureProvider::class,
-                    TestSuccessProvider::class,
+                    TestFailureProvider::class => [],
+                    TestSuccessProvider::class => [],
                 ],
                 1,
                 1,
@@ -161,8 +171,8 @@ class EmailHandlerTest extends TestCase
             ],
             [
                 [
-                    TestSuccessProvider::class,
-                    TestFailureProvider::class,
+                    TestSuccessProvider::class => [],
+                    TestFailureProvider::class => [],
                 ],
                 3,
                 1,
@@ -171,10 +181,10 @@ class EmailHandlerTest extends TestCase
             ],
             [
                 [
-                    TestFailureProvider::class,
-                    TestFailureProvider::class,
-                    TestFailureProvider::class,
-                    TestSuccessProvider::class,
+                    TestFailureProvider::class => [],
+                    TestFailureProvider2::class => [],
+                    TestFailureProvider3::class => [],
+                    TestSuccessProvider::class => [],
                 ],
                 30,
                 4,
@@ -183,9 +193,9 @@ class EmailHandlerTest extends TestCase
             ],
             [
                 [
-                    TestFailureProvider::class,
-                    TestFailureProvider::class,
-                    TestFailureProvider::class,
+                    TestFailureProvider::class => [],
+                    TestFailureProvider2::class => [],
+                    TestFailureProvider3::class => [],
                 ],
                 10,
                 10,
