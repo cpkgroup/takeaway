@@ -8,12 +8,14 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class EmailHandler implements MessageHandlerInterface
 {
     protected $bus;
     protected $entityManager;
     protected $logger;
+    protected $httpClient;
     protected $maxTriesCount;
     protected $defaultFromName;
     protected $defaultFromEmail;
@@ -26,6 +28,7 @@ class EmailHandler implements MessageHandlerInterface
         MessageBusInterface $bus,
         EntityManagerInterface $entityManager,
         LoggerInterface $logger,
+        HttpClientInterface $httpClient,
         $maxTriesCount,
         $defaultFromName,
         $defaultFromEmail,
@@ -34,43 +37,45 @@ class EmailHandler implements MessageHandlerInterface
         $this->bus = $bus;
         $this->entityManager = $entityManager;
         $this->logger = $logger;
+        $this->httpClient = $httpClient;
         $this->maxTriesCount = $maxTriesCount;
         $this->defaultFromName = $defaultFromName;
         $this->defaultFromEmail = $defaultFromEmail;
-        foreach ($providers as $provider) {
-            $this->providers[] = new $provider();
+        foreach ($providers as $provider => $data) {
+            $this->providers[] = new $provider($this->httpClient, $data);
         }
     }
 
     public function run(SendEmailJob $job)
     {
         $this->logger->info('Email job fired', [$job->getId()]);
-        try {
-            if (empty($this->providers)) {
-                throw new \Exception('Email providers are empty!');
-            }
-            $emailRepository = $this->entityManager->getRepository(Email::class);
 
-            /** @var Email $email */
-            $email = $emailRepository->findEmail($job->getId());
-            if (!$email->getFromName()) {
-                $email->setFromName($this->defaultFromName);
-            }
-            if (!$email->getFromEmail()) {
-                $email->setFromEmail($this->defaultFromEmail);
-            }
-            foreach ($this->providers as $provider) {
+        if (empty($this->providers)) {
+            $this->logger->error('Email providers are empty!');
+
+            return;
+        }
+        $emailRepository = $this->entityManager->getRepository(Email::class);
+
+        /** @var Email $email */
+        $email = $emailRepository->findEmail($job->getId());
+        if (!$email->getFromName()) {
+            $email->setFromName($this->defaultFromName);
+        }
+        if (!$email->getFromEmail()) {
+            $email->setFromEmail($this->defaultFromEmail);
+        }
+        foreach ($this->providers as $provider) {
+            try {
                 // if provider could sending email break the loop, else try next provider
                 if ($isFinished = $this->batchSendViaProvider($provider, $email)) {
                     break;
                 }
+            } catch (\Exception $exception) {
+                $this->logger->error('Provider ['.$provider->getProviderName().'] failed: '.$exception->getMessage());
             }
-            $emailRepository->markAsSent($email);
-        } catch (\Exception $exception) {
-            $this->logger->error('Queue failed: '.$exception->getMessage());
-
-            return;
         }
+        $emailRepository->markAsSent($email);
 
         if (!$isFinished) {
             $this->logger->info('Put job again in queue', [$job->getId()]);

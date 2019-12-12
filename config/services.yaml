@@ -30,7 +30,15 @@ services:
         arguments:
             $defaultFromName: 'Takeaway'
             $defaultFromEmail: 'info@takeaway.com'
-            $maxTriesCount: 4
+            $maxTriesCount: 2
             $providers:
-                - 'App\Service\Email\Providers\MailJetMailer'
-                - 'App\Service\Email\Providers\SendGridMailer'
+                'App\Service\Email\Providers\SendGridMailer':
+                    active: true
+                    apiKey: '%env(SENDGRID_API_KEY)%'
+                    uri: https://api.sendgrid.com/v3/mail/send
+                'App\Service\Email\Providers\MailJetMailer':
+                    active: true
+                    apiKeyPublic: '%env(MAILJET_APIKEY_PUBLIC)%'
+                    apiKeyPrivate: '%env(MAILJET_APIKEY_PRIVATE)%'
+                    uri: https://api.mailjet.com/v3.1/send
+                    staticSender: 'habibi.mh@gmail.com'
