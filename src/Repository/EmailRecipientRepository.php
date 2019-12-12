@@ -8,6 +8,8 @@ use Doctrine\ORM\EntityRepository;
 class EmailRecipientRepository extends EntityRepository
 {
     /**
+     * Retrieve all failed recipients.
+     *
      * @return EmailRecipient[]
      */
     public function findFailedRecipients(int $limit)
@@ -16,6 +18,8 @@ class EmailRecipientRepository extends EntityRepository
     }
 
     /**
+     * Retrieve all pending recipients.
+     *
      * @return EmailRecipient[]
      */
     public function findPendingRecipients(int $limit)
@@ -24,6 +28,8 @@ class EmailRecipientRepository extends EntityRepository
     }
 
     /**
+     * Reset status and try count of a recipient.
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -38,7 +44,9 @@ class EmailRecipientRepository extends EntityRepository
     }
 
     /**
-     * @param $recipients
+     * Reset status and try count of array of recipient.
+     *
+     * @param array $recipients
      *
      * @return void
      *
@@ -54,7 +62,10 @@ class EmailRecipientRepository extends EntityRepository
     }
 
     /**
-     * @param $recipients
+     * Get unique email ids in an array of recipients.
+     *
+     * @param array $recipients
+     *
      * @return array
      */
     public function getUniqueEmailIdsFromRecipients($recipients)

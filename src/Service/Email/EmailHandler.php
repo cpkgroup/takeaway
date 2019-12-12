@@ -46,6 +46,9 @@ class EmailHandler implements MessageHandlerInterface
         }
     }
 
+    /**
+     * Run an email job, sending emails via providers here.
+     */
     public function run(SendEmailJob $job)
     {
         $this->logger->info('Email job fired', [$job->getId()]);
@@ -81,10 +84,12 @@ class EmailHandler implements MessageHandlerInterface
             $this->logger->info('Put job again in queue', [$job->getId()]);
             $this->bus->dispatch($job);
         }
-        $this->logger->info('Queue finished');
+        $this->logger->info('Email job finished');
     }
 
     /**
+     * This method send email to all of the recipients of its via provider.
+     *
      * @return bool
      *
      * @throws \Exception

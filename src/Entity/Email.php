@@ -155,17 +155,11 @@ class Email implements JsonSerializable
         $this->body = $body;
     }
 
-    /**
-     * @return string|null
-     */
     public function getBodyTextPart(): ?string
     {
         return $this->bodyTextPart;
     }
 
-    /**
-     * @param string|null $bodyTextPart
-     */
     public function setBodyTextPart(?string $bodyTextPart): void
     {
         $this->bodyTextPart = $bodyTextPart;

@@ -41,6 +41,11 @@ class EmailCommand extends Command
             ->addArgument('body', InputArgument::REQUIRED, 'The email body');
     }
 
+    /**
+     * This command allows you to send an Email.
+     *
+     * @return int|null
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // outputs multiple lines to the console (adding "\n" at the end of each line)

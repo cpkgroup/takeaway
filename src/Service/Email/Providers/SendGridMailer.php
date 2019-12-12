@@ -3,26 +3,12 @@
 namespace App\Service\Email\Providers;
 
 use App\Service\Email\ProviderInterface;
+use App\Service\Email\ProviderParamsTrait;
 use Exception;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SendGridMailer implements ProviderInterface
 {
-    /**
-     * @var HttpClientInterface
-     */
-    private $httpClient;
-
-    /**
-     * @var array
-     */
-    private $data;
-
-    public function __construct(HttpClientInterface $httpClient, array $data)
-    {
-        $this->httpClient = $httpClient;
-        $this->data = $data;
-    }
+    use ProviderParamsTrait;
 
     public function send(
         ?string $fromName,

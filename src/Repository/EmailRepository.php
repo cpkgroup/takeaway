@@ -8,22 +8,39 @@ use Doctrine\ORM\EntityRepository;
 
 class EmailRepository extends EntityRepository
 {
+    /**
+     * Retrieve an email by id.
+     *
+     * @return object|null
+     */
     public function findEmail(int $id)
     {
         return $this->find($id);
     }
 
+    /**
+     * Retrieve emails by desc order, using limit and offset.
+     *
+     * @return array
+     */
     public function findAllEmail(int $limit, int $offset)
     {
         return $this->findBy([], ['id' => 'DESC'], $limit, $offset);
     }
 
+    /**
+     * Count all the emails.
+     *
+     * @return int
+     */
     public function countAllEmail()
     {
         return $this->count([]);
     }
 
     /**
+     * Create a new email with the data from EmailRequest class.
+     *
      * @return Email
      *
      * @throws \Doctrine\ORM\ORMException
@@ -60,8 +77,7 @@ class EmailRepository extends EntityRepository
     }
 
     /**
-     * @param string $provider
-     * @param bool   $success
+     * Mark an email as send and save in database.
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException

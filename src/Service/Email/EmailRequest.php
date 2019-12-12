@@ -23,6 +23,7 @@ class EmailRequest
         $this->data = json_decode($data, true);
         if (!$this->data) {
             $this->validationErrors[] = ['error' => 'Invalid Json format'];
+
             return;
         }
         $validation = new EmailRequestValidation();

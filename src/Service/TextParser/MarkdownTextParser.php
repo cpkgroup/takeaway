@@ -13,6 +13,11 @@ class MarkdownTextParser implements TextParserInterface
         $this->parsedown = new Parsedown();
     }
 
+    /**
+     * This method convert a markdown $text to html format.
+     *
+     * @return string
+     */
     public function parse(string $text)
     {
         return $this->parsedown->text($text);

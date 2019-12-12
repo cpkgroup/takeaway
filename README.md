@@ -54,20 +54,47 @@ docker-compose run php /www/vendor/bin/php-cs-fixer fix /www/src
 - VueJS
 - RabbitMQ
 
-## Endpoints Examples
+## Cli Commands
 
 #### Send email via CLI Command
 
-**Format: **
+**Format:**
 ```
-docker-compose run php bin/console {subject} {recipient} {body}
+docker-compose run php bin/console app:send-email {subject} {recipient} {body}
 ```
 
-**Sample: **
+**Sample:**
 ```
 docker-compose run php bin/console app:send-email hello habibi.mh@gmail.com "this is the email from command cli"
 ```
 
+#### Queue again failed emails
+
+**Format:**
+```
+docker-compose run php bin/console app:queue-failed-emails {limit} # limit is optional, default 100
+```
+
+**Sample:**
+```
+docker-compose run php bin/console app:queue-failed-emails
+```
+
+#### Queue again pending emails
+
+This command is useful when we the queue is crashed or reset.
+
+**Format:**
+```
+docker-compose run php bin/console app:queue-failed-emails {limit} # limit is optional, default 100
+```
+
+**Sample:**
+```
+docker-compose run php bin/console app:queue-failed-emails
+```
+
+## Endpoints Examples
 
 #### Send email API
 We have 3 `messageType`: 

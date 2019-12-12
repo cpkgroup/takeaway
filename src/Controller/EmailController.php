@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Email;
-use App\Service\Job\SendEmailJob;
 use App\Service\Email\EmailRequest;
+use App\Service\Job\SendEmailJob;
 use App\Service\TextParser\TextParserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,7 +14,9 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class EmailController extends AbstractController
 {
     /**
-     * @return string
+     * Send new email by a json formatted request.
+     *
+     * @return JsonResponse
      */
     public function composeAction(
         Request $request,
@@ -42,6 +44,13 @@ class EmailController extends AbstractController
         ], JsonResponse::HTTP_ACCEPTED);
     }
 
+    /**
+     * Find all email logs and sort them desc by default,
+     * The result will paginate with page param,
+     * And The limit of the result is defined on services.yaml.
+     *
+     * @return JsonResponse
+     */
     public function listAction(Request $request)
     {
         $limit = $this->getParameter('reportLimit');

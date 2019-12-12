@@ -34,6 +34,11 @@ class QueueFailedEmailsCommand extends Command
             ->addArgument('limit', InputArgument::OPTIONAL, 'The email limit');
     }
 
+    /**
+     * This command allows you to queue again failed emails.
+     *
+     * @return int|null
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $limit = $input->getArgument('limit') ?? 100;
