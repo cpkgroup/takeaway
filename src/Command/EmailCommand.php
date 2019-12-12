@@ -34,11 +34,11 @@ class EmailCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Compose a new email.')
-            ->setHelp('This command allows you to send an Email.')
-            ->addArgument('subject', InputArgument::REQUIRED, 'The email subject.')
-            ->addArgument('recipient', InputArgument::REQUIRED, 'The email recipient.')
-            ->addArgument('body', InputArgument::REQUIRED, 'The email body.');
+            ->setDescription('Compose a new email')
+            ->setHelp('This command allows you to send an Email')
+            ->addArgument('subject', InputArgument::REQUIRED, 'The email subject')
+            ->addArgument('recipient', InputArgument::REQUIRED, 'The email recipient')
+            ->addArgument('body', InputArgument::REQUIRED, 'The email body');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
