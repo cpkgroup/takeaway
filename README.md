@@ -93,16 +93,16 @@ docker-compose run php bin/console app:queue-failed-emails
 
 #### Queue again pending emails
 
-This command is useful when we the queue is crashed or reset.
+This command is useful when the queue is crashed or reset.
 
 **Format:**
 ```
-docker-compose run php bin/console app:queue-failed-emails {limit} # limit is optional, default 100
+docker-compose run php bin/console app:queue-pending-emails {limit} # limit is optional, default 100
 ```
 
 **Sample:**
 ```
-docker-compose run php bin/console app:queue-failed-emails
+docker-compose run php bin/console app:queue-pending-emails
 ```
 
 ## Endpoints Examples
